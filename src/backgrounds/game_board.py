@@ -1,6 +1,7 @@
 """
 Tile on the board
 Tiles have elevation and can contain a single piece
+Stores a pre-loaded background image
 """
 class Tile(object):
 	def __init__(self, elev, bg):
@@ -19,9 +20,9 @@ class SqTile(Tile):
 
 class Board(object):
 	def __init__(self, dim, elev_table, bg_table):
-		# Boards must have even dimensions
-		self.length = dim[0] - dim[0] % 2
-		self.width = dim[1] - dim[1] % 2
+		# Boards must have even dimensions; check elsewhere
+		self.length = dim[0]
+		self.width = dim[1]
 		
 		# Generate the board
 		self.tiles = []
@@ -41,3 +42,11 @@ class Board(object):
 				# Octagons in odd tiles on odd rows
 				else:
 					tiles[i].append(OctTile(elev_table[i][j], bg_table[i][j]))
+		
+		# Generate something to draw the board on
+		self.board_surface = pygame.Surface((self.width * 32, self.length * 32))
+		
+		# Draw the board onto the surface
+		for i in range(0, self.length):
+			for j in range(0, self.width):
+				self.board_surface.blit(self.tiles[i][j], (i * 32 + 16, j * 32 + 16))
