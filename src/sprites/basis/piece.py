@@ -21,7 +21,7 @@ Piece consists of:
 	Sprite: Location of sprite in folder
 	Actions: Function pointers that define a piece's unique abilities
 """
-class Piece(object):
+class Piece(dict):
 	def __init__(self, xcoord, ycoord, level, stats, sprite):
 		self.level = level
 		self.stats = stats
