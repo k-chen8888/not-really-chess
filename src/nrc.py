@@ -8,13 +8,45 @@ from player import profile as p
 
 
 mousex, mousey = 0, 0
+fieldx, fieldy = 0, 0
 
-# Parses a document for tile images
-def get_bg_imgs(infile):
-	pass
 
-# Takes a list of background images and loads them as surfaces
-def load_bg(dim, bg_imgs):
+# Parses a document for background info
+def get_field_info(infile):
+	f = open(infile)
+	
+	bg_imgs = {}
+	bg_imgs['tile_imgs'] = []
+	
+	for line in f:
+		if 'Dimensions: ' in line:
+			# Pull map dimensions out of the file
+			temp = [int(s) for s in str.split() if s.isdigit()]
+			
+			# Minimum map size is 200 by 200
+			fieldx = temp[0] if temp[0] > 200 else 200
+			fieldy = temp[1] if temp[1] > 200 else 200
+		
+		elif 'World: ' in line:
+			bg_imgs['world_img'] = s for s in str.split() if '.png' in s
+		
+		elif 'Tile: ' in line:
+			# Pull tile coordinates out of the file
+			temp = [int(s) for s in str.split() if s.isdigit()]
+			
+			# Pull tile background image out of the file	
+			bg_imgs['tile_imgs'].append([[temp[0], temp[1]], s for s in str.split() if '.png' in s])
+		else:
+			# All other types of lines are comments
+			pass
+	
+	f.close()
+	
+	return bg_imgs
+
+
+# Processes bg_imgs dictionary
+def load_bg(bg_imgs):
 	# 0 is world
 	# 1 is board
 	bg = []
@@ -23,9 +55,10 @@ def load_bg(dim, bg_imgs):
 	
 	for i in range(0, dim[0] - dim[0] % 2):
 		bg[1].append([])
-
+		
 		for j in range(0, dim[1] - dim[1] % 2):
 			bg[1][i].append(pygame.image.load(bg_imgs[i][j]).convert())
+
 
 # Events within game
 def event_handler():
@@ -58,6 +91,6 @@ if __name__ == "__main__":
 		
 		# Event handler
 		event_handler()
-	
+		
 		pygame.display.update()
 		fpsClock.tick(30)
