@@ -45,8 +45,19 @@ def event_handler():
 if __name__ == "__main__":
 	
 	pygame.init()
+	fpsClock = pygame.time.Clock()
+	
+	whiteColor = pygame.Color(255, 255, 255)
+	
+	windowSurfaceObj = pygame.display.set_mode((640, 480))
+	pygame.display.set_caption('Not Really Chess')
 	
 	while True:
 		
+		windowSurfaceObj.fill(whiteColor)
+		
 		# Event handler
 		event_handler()
+	
+		pygame.display.update()
+		fpsClock.tick(30)

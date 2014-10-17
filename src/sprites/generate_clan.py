@@ -12,7 +12,7 @@ General file structure:
 	<dir_name>_sprites
 		<dir_name>_<piece_type>.png
 """
-dir_names = [x[0] for x in os.walk(os.path.getcwd())]
+dir_names = [x[0] for x in os.walk(os.getcwd())]
 
 
 def make_pieces(dir):

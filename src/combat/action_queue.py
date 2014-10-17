@@ -29,7 +29,7 @@ class ActionQueue(object):
 	"""
 	Checks if there is still space left in the queue
 	"""
-	def has_space(self)
+	def has_space(self):
 		return ( len(self.queue) < self.MAX_SIZE )
 
 	"""
