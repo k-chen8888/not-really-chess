@@ -4,17 +4,28 @@ def get_field_info(infile):
 	
 	board_info = {}
 	board_info['board_dim'] = []
-	board_info['tile_imgs'] = []
+	board_info['tile_imgs'] = []	
 	
 	for line in f:
-		if 'Dimensions: ' in line:
+		if 'IGNORE' in line:
+			pass
+			# Ignore the line
+		elif 'Dimensions: ' in line:
 			# Pull map dimensions out of the file
 			# Assumed to be in form <width, height>
 			temp = [int(s) for s in str.split() if s.isdigit()]
 			
-			# Minimum map size is 200 tiles by 200 tiles
-			board_info['board_dim'].append( temp[0] if temp[0] > 200 else 200)
-			board_info['board_dim'].append( temp[1] if temp[1] > 200 else 200)
+			# Minimum map size is 50 tiles by 50 tiles
+			if temp[0] < 50:
+				board_info['board_dim'].append( 50 )
+				print "Non-optimal board width given. Automatically increased"
+			else:
+				board_info['board_dim'].append( temp[0] )
+			if temp[0] < 50:
+				board_info['board_dim'].append( 50 )
+				print "Non-optimal board height given. Automatically increased"
+			else:
+				board_info['board_dim'].append( temp[1] )
 		
 		elif 'World: ' in line:
 			# Pull background for entire map

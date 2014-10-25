@@ -20,7 +20,7 @@ class OctTile(Tile):
 Flags are placed on square tiles
 '''
 class SqTile(Tile):
-	def __init(self, elev, bg):
+	def __init__(self, elev, bg):
 		Tile.__init__(self, elev, bg)
 		self.has_flag = False
 
@@ -33,14 +33,14 @@ Take a dictionary of board elements
 class Board(object):
 	def __init__(self, bg_dict):
 		# Boards must have even dimensions (check outside of __init__)
-		self.length = bg_dict['board_dim'][0]
 		self.width = bg_dict['board_dim'][0]
+		self.height = bg_dict['board_dim'][1]
 		
 		# Generate the board
 		self.tiles = []
 		for i in range(0, self.length):
 			tiles.append([])
-
+			
 			for j in range(0, self.width):
 				# Octagons in even tiles on even rows
 				if j % 2 == 0 and i % 2 == 0:
@@ -60,7 +60,8 @@ class Board(object):
 			tilex = sp_tile[0][0]
 			tiley = sp_tile[0][1]
 			
-			tiles[tilex][tiley] = sp_tile[1]
+			# Load tiles, prepare for blitting
+			tiles[tilex][tiley] = pygame.image.load(sp_tile[1]).convert_alpha()
 		
 		# Generate something to draw the board on
 		self.board_surface = pygame.Surface((self.width * 128, self.length * 128))
