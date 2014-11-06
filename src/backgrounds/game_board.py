@@ -4,7 +4,9 @@ Tiles have elevation and can contain a single piece
 Stores a pre-loaded background image
 """
 class Tile(object):
-	def __init__(self, elev, bg):
+	def __init__(self, elev, bg, coords):
+		self.centerx = coords[0]
+		self.centery = coords[1]
 		self.elev = elev
 		self.bg = bg
 
@@ -12,16 +14,16 @@ class Tile(object):
 Pieces traverse octagonal tiles
 '''
 class OctTile(Tile):
-	def __init__(self, elev, bg):
-		Tile.__init__(self, elev, bg)
+	def __init__(self, elev, bg, coords):
+		Tile.__init__(self, elev, bg, coords)
 		self.has_piece = False
 
 '''
 Flags are placed on square tiles
 '''
 class SqTile(Tile):
-	def __init__(self, elev, bg):
-		Tile.__init__(self, elev, bg)
+	def __init__(self, elev, bg, coords):
+		Tile.__init__(self, elev, bg, coords)
 		self.has_flag = False
 
 '''
@@ -44,7 +46,7 @@ class Board(object):
 			for j in range(0, self.width):
 				# Octagons in even tiles on even rows
 				if j % 2 == 0 and i % 2 == 0:
-					tiles[i].append(OctTile(0, None))
+					tiles[i].append(OctTile(0, (i*128+64, j*128+64))
 				# Squares in odd tiles on even rows
 				elif j % 2 == 1 and i % 2 == 0:
 					tiles[i].append(SqTile(0, None))
