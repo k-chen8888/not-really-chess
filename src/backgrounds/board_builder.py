@@ -1,3 +1,5 @@
+import game_board as gb
+
 # Parses a document for background info
 def get_field_info(infile):
 	f = open(infile)
@@ -13,7 +15,7 @@ def get_field_info(infile):
 		elif 'Dimensions: ' in line:
 			# Pull map dimensions out of the file
 			# Assumed to be in form <width, height>
-			temp = [int(s) for s in str.split() if s.isdigit()]
+			temp = [int(s) for s in line.split() if s.isdigit()]
 			
 			# Minimum map size is 50 tiles by 50 tiles
 			if temp[0] < 50:
@@ -30,15 +32,15 @@ def get_field_info(infile):
 		elif 'World: ' in line:
 			# Pull background for entire map
 			# Assumed to be at least 25600px by 25600px
-			board_info['world_img'] = [s for s in str.split() if '.png' in s][0]
+			board_info['world_img'] = [s for s in line.split( ) if '.png' in s][0]
 		
 		elif 'Tile: ' in line:
 			# Pull tile coordinates out of the file
-			temp = [int(s) for s in str.split() if s.isdigit()]
+			temp = [int(s) for s in line.split() if s.isdigit()]
 			
 			# Pull tile background image out of the file
 			# Assumed to be 128px by 128px
-			board_info['tile_imgs'].append([ [ temp[0], temp[1] ], [s for s in str.split() if '.png' in s][0] ])
+			board_info['tile_imgs'].append([ [ temp[0], temp[1] ], [s for s in line.split() if '.png' in s][0] ])
 			
 			# Pull tile elevation out of the file
 			# If no such information is pulled, assume it is 0 (ground level)
@@ -57,4 +59,4 @@ def get_field_info(infile):
 # Calculations should be done by finding where the upper left corner of the image belongs
 # Draw onto windowSurfaceObj
 def load_bg(board_info):
-	return Board(board_info)
+	return gb.Board(board_info)

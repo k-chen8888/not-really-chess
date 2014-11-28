@@ -5,8 +5,6 @@ from backgrounds import draw_tool
 
 # Gets mouse position
 mousex, mousey = 0, 0
-# Current position of upper left corner
-cornerx, cornery = 0, 0
 
 # Ctrl on
 use_ctrl = False
@@ -15,7 +13,7 @@ use_shift = False
 
 
 # Events while game is being played
-def event_handler():
+def event_handler(board):
 	global use_ctrl
 	global use_shift
 
@@ -37,21 +35,17 @@ def event_handler():
 			# Arrow keys, for CTRL pressed
 			if use_ctrl == True:
 				if event.key == K_UP:
-					cornery = cornery - 10
-					if cornery < 0:
-						cornery = 0
+					print "UP: 0, -32"
+					board.move(0, -32)
 				elif event.key == K_DOWN:
-					cornery = cornery + 10
-					if cornery < 0:
-						cornery = 0
+					print "DOWN: 0, 32"
+					board.move(0, 32)
 				elif event.key == K_LEFT:
-					cornerx = cornerx - 10
-					if cornerx < 0:
-						cornerx = 0	
+					print "LEFT: -32, 0"
+					board.move(-32, 0)
 				elif event.key == K_RIGHT:
-					cornerx = cornerx + 10
-					if cornerx < 0:
-						cornerx = 0
+					print "RIGHT: 32, 0"
+					board.move(32, 0)
 			
 			# Arrow keys, SHIFT pressed once
 			elif use_shift == True:
@@ -59,16 +53,18 @@ def event_handler():
 
 
 # The actual game
-def play_nrc(surface, fpsClock):
+def play_nrc(surface, fpsClock, board):
 	whiteColor = pygame.Color(255, 255, 255)
-
+	
 	while True:
 		
 		surface.fill(whiteColor)
-		draw_tool.draw_grid(50, 50, surface)
+		#draw_tool.draw_grid(50, 50, surface)
+		board.draw_grid()
+		surface.blit(board.board_surface, (0, 0))
 		
 		# Event handler
-		event_handler()
+		event_handler(board)
 		
 		pygame.display.update()
 		fpsClock.tick(60)
