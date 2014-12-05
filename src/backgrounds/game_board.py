@@ -6,6 +6,7 @@ import sys
 sys.path.append('../')
 from constants import * 
 
+# Import camera tool
 from camera import camera as c
 
 
@@ -20,6 +21,7 @@ class Tile(object):
 		self.elev = elev
 		self.bg = bg
 
+
 '''
 Pieces traverse octagonal tiles
 '''
@@ -28,6 +30,7 @@ class OctTile(Tile):
 		Tile.__init__(self, elev, bg)
 		self.has_piece = False
 
+
 '''
 Flags are placed on square tiles
 '''
@@ -35,6 +38,7 @@ class SqTile(Tile):
 	def __init__(self, elev, bg):
 		Tile.__init__(self, elev, bg)
 		self.has_flag = False
+
 
 '''
 Take a dictionary of board elements
@@ -51,26 +55,30 @@ class Board(object):
 		# Camera for calculating offsets
 		self.cam = c.Camera([0, 0], [self.width * TILE_DIMS, self.height * TILE_DIMS])
 		
+		# Generate something to draw the board on
+		self.board_surface = pygame.Surface((self.width * TILE_DIMS, self.height * TILE_DIMS))
+
 		# Generate the board
-		# Fix this later
-		self.tiles = []
+		# self.height = # of OctTile rows = # SqTile rows - 1
+		# self.width = # of OctTiles per row = # SqTiles per row - 1
+		# Coordinates calculated based on camera offset and array index
+		self.tiles = {}
+		
+		self.tiles['oct_tiles'] = []
 		for i in range(0, self.height):
-			self.tiles.append([])
+			self.tiles['oct_tiles'].append([])
 			
-			# Add tiles to list
+			# Add OctTile tiles to list
 			for j in range(0, self.width):
-				# Octagons in even tiles on even rows
-				if j % 2 == 0 and i % 2 == 0:
-					self.tiles[i].append(OctTile(0, None))
-				# Squares in odd tiles on even rows
-				elif j % 2 == 1 and i % 2 == 0:
-					self.tiles[i].append(SqTile(0, None))
-				# Squares in even tiles on odd rows
-				elif j % 2 == 0 and i % 2 == 1:
-					self.tiles[i].append(SqTile(0, None))
-				# Octagons in odd tiles on odd rows
-				else:
-					self.tiles[i].append(OctTile(0, None))
+				self.tiles['oct_tiles'].append(OctTile(0, None))
+		
+		self.tiles['sq_tiles'] = []
+		for i in range(0, self.height + 1):
+			self.tiles['sq_tiles'].append([])
+			
+			# Add SqTile tiles to list
+			for j in range(0, self.width + 1):
+				self.tiles['sq_tiles'].append(SqTile(0, None))
 		
 		for sp_tile in bg_dict['tile_imgs']:
 			# Update the special tiles' images by looking them up by coordinates
@@ -80,9 +88,7 @@ class Board(object):
 			# Load tiles, prepare for blitting
 			tiles[tilex][tiley] = pygame.image.load(sp_tile[1]).convert_alpha()
 		
-		# Generate something to draw the board on
-		self.board_surface = pygame.Surface((self.width * TILE_DIMS, self.height * TILE_DIMS))
-	
+		
 	'''
 	Changes the coordinates of the upper left corner
 
@@ -93,7 +99,7 @@ class Board(object):
 	
 	'''
 	Draws images onto a board
-	Accounts for offset
+	Accounts for offset using the array indices of the tiles
 	'''
 	def draw_board(self):
 		# Draw the board onto the surface
@@ -109,14 +115,17 @@ class Board(object):
 	'''
 	Draws an octagonal grid on a surface
 	
-		(i+32, j)		(i+96, j)
+			(i+OCT_0, j)				(i+OCT_1, j)
 	
-	(i, j+32)				(i+128, j+32)
+	(i, j+OCT_0)								(i+TILE_DIMS, j+OCT_0)
 	
 	
-	(i, j+96)				(i+128, j+96)
+	(i, j+OCT_1)								(i+TILE_DIMS, j+OCT_1)
 	
-		(i+32, j+128)	(i+96, j+128)
+		 	(i+OCT_0, j+TILE_DIMS)		(i+OCT_1, j+TILE_DIMS)
+	
+	Squares will appear as a consequence of the drawing
+	Input the coordinates clockwise starting from (i+OCT_0, j)
 	'''
 	def draw_grid(self):
 		j = 0
@@ -127,12 +136,10 @@ class Board(object):
 		self.board_surface.fill(pygame.Color(255, 255, 255))
 		
 		# Octagons on every row
-		while j < self.height:
+		for j in range(0, self.height):
 			h_off = j*TILE_DIMS - self.cam.toply
 			
 			for i in range(0, self.width):
 				w_off = i*TILE_DIMS - self.cam.toplx
 				
 				pygame.draw.polygon(self.board_surface, pygame.Color(0, 0, 0), ( (w_off+OCT_0, h_off), (w_off+OCT_1, h_off), (w_off+TILE_DIMS, h_off+OCT_0), (w_off+TILE_DIMS, h_off+OCT_1), (w_off+OCT_1, h_off+TILE_DIMS), (w_off+OCT_0, h_off+TILE_DIMS), (w_off, h_off+OCT_1), (w_off, h_off+OCT_0) ), 1)
-			
-			j = j + 1

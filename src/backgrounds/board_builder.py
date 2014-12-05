@@ -6,7 +6,7 @@ def get_field_info(infile):
 	
 	board_info = {}
 	board_info['board_dim'] = []
-	board_info['tile_imgs'] = []	
+	board_info['tile_imgs'] = []
 	
 	for line in f:
 		if 'IGNORE' in line:
